@@ -1,40 +1,51 @@
 package com.horseapp.rest_demo;
 
-import java.util.NoSuchElementException;
-import com.horseapp.rest_demo.Person;
-
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootApplication
 @RestController
 public class RestDemoApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(RestDemoApplication.class, args);
-	}
-	@GetMapping("/hello")
-	public String hello(@RequestParam(value = "name", defaultValue = "World") String name) {
-		return String.format("Hello %s!", name);
-	}
+    private final PersonRepository repository;
 
-	@Bean
-  CommandLineRunner runner(PersonRepository repository) {
-    return args -> {
+    // Constructor injection
+    public RestDemoApplication(PersonRepository repository) {
+        this.repository = repository;
+    }
 
-      Person person = new Person();
-      person.setName("Test123");
+    public static void main(String[] args) {
+        SpringApplication.run(RestDemoApplication.class, args);
+    }
 
-      repository.save(person);
-      Person saved = repository.findById(person.getId()).orElseThrow(NoSuchElementException::new);
-    };
-  }
+    @PostMapping("/person")
+    public String createPerson(@RequestBody Person person) {
+        // Save the person and ensure ID is assigned
+        repository.save(person);
+        return String.format("Person created with ID: %d and Name: %s", person.getId(), person.getName());
+    }
 
+    @Bean
+    CommandLineRunner runner() {
+        return args -> {
+            Person person = new Person();
+            person.setName("Test123");
 
+            // Save the person and ensure ID is assigned
+            repository.save(person);
+            System.out.println("Saved Person ID: " + person.getId());
+
+            // Find the person safely and log the result
+            repository.findById(person.getId())
+                    .ifPresentOrElse(
+                            found -> System.out.println("Retrieved Person: " + found.getName()),
+                            () -> System.out.println("Person not found!")
+                    );
+        };
+    }
 }
