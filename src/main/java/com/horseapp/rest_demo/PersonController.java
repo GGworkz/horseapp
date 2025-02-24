@@ -32,8 +32,11 @@ public class PersonController {
 
     @DeleteMapping("/{id}")
     public String deletePerson(@PathVariable Long id) {
-        commonCrudService.delete(id);
-        return String.format("Person with ID: %d has been deleted", id);
+        if (commonCrudService.delete(id)) {
+            return String.format("Person with ID: %d has been deleted", id);
+        } else {
+            return String.format("Did not find Person with ID: %d", id);
+        }
     }
 
     @PutMapping("/{id}")

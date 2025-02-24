@@ -32,8 +32,12 @@ public class PersonBelongingsController {
 
     @DeleteMapping("/{id}")
     public String deleteBelonging(@PathVariable Long id) {
-        commonCrudService.delete(id);
-        return String.format("Belonging with ID: %d has been deleted", id);
+        if (commonCrudService.delete(id)) {
+            return String.format("Belonging with ID: %d has been deleted", id);
+        } else {
+            return String.format("Did not find belonging with ID: %d", id);
+        }
+        
     }
 
     @PutMapping("/{id}")

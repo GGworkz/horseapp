@@ -12,19 +12,4 @@ public class RestDemoApplication {
     public static void main(String[] args) {
         SpringApplication.run(RestDemoApplication.class, args);
     }
-
-//    // If you want to run some initialization logic, you can still keep this CommandLineRunner.
-//    @Bean
-//    CommandLineRunner runner(PersonRepository repository) {
-//        return args -> {
-//            // You can add any initialization logic here if needed
-//        };
-//    }
-//
-//    @Bean
-//    CommandLineRunner runner(PersonBelongingsRepository repository) {
-//        return args -> {
-//            // You can add any initialization logic here if needed
-//        };
-//    }
 }

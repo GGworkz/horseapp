@@ -16,11 +16,7 @@ class PersonBelongings {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "belongings_id_seq")
     @SequenceGenerator(name = "belongings_id_seq", sequenceName = "belongings_id_seq", allocationSize = 1)
     private Long id;
-
-    @Column(name = "person_id", nullable = false)
     private Long personId;
-
-    @Column(name = "item_name", length = 100, nullable = false)
     private String itemName;
 }
 

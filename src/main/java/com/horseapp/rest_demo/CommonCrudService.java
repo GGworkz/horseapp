@@ -23,8 +23,10 @@ public class CommonCrudService<T, ID> {
         return repository.findById(id);
     }
 
-    public void delete(ID id) {
+    public boolean delete(ID id) {
+        boolean exists = repository.findById(id).isEmpty() ? false : true;
         repository.findById(id).ifPresent(repository::delete);
+        return exists;
     }
 
     public T update(T entity) {
