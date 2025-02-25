@@ -37,7 +37,6 @@ public class PersonBelongingsController {
         } else {
             return String.format("Did not find belonging with ID: %d", id);
         }
-        
     }
 
     @PutMapping("/{id}")
