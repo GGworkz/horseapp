@@ -10,8 +10,7 @@ import java.util.Optional;
 public class CommonCrudService<T, ID> {
 
     private final JpaRepository<T, ID> repository;
-
-    public CommonCrudService(@Qualifier("personRepository") JpaRepository<T, ID> repository) {
+    public CommonCrudService(@Qualifier("veterinarianRepository") JpaRepository<T, ID> repository) {
         this.repository = repository;
     }
 

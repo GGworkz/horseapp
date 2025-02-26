@@ -1,6 +1,5 @@
 package com.horseapp.rest_demo;
 
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import jakarta.persistence.Table;
 import jakarta.persistence.Entity;
@@ -12,20 +11,22 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Repository;
 
-
 @Getter
 @Setter
 @Entity
-@Table(name = "person")
-class Person {
+@Table(name = "veterinarian")
+class Veterinarian {
+
   @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "person_id_seq")
-  @SequenceGenerator(name = "person_id_seq", sequenceName = "person_id_seq", allocationSize = 1)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "veterinarian_seq")
+  @SequenceGenerator(name = "veterinarian_seq", sequenceName = "veterinarian_seq", allocationSize = 1)
   private Long id;
-  private String name;
-  private int age;
+  private String username;
+  private String password;
+  private String email;
+  private String phone;
 }
 
 @Repository
-interface PersonRepository extends JpaRepository<Person, Long> {
+interface VeterinarianRepository extends JpaRepository<Veterinarian, Long> {
 }
