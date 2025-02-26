@@ -40,7 +40,7 @@ CREATE TABLE Client
         ON UPDATE CASCADE
 );
 
-CREATE SEQUENCE IF NOT EXISTS horse_seq;
+CREATE SEQUENCE IF NOT EXISTS horse_seq START 1;
 CREATE TABLE Horses
 (
     id        BIGINT PRIMARY KEY DEFAULT nextval('horse_seq'),
@@ -53,7 +53,7 @@ CREATE TABLE Horses
         ON UPDATE CASCADE
 );
 
-CREATE SEQUENCE IF NOT EXISTS consultation_seq;
+CREATE SEQUENCE IF NOT EXISTS consultation_seq START 1;
 CREATE TABLE Consultation
 (
     id        BIGINT PRIMARY KEY DEFAULT nextval('consultation_seq'),
@@ -65,14 +65,14 @@ CREATE TABLE Consultation
         ON UPDATE CASCADE
 );
 
-CREATE SEQUENCE IF NOT EXISTS product_type_seq;
+CREATE SEQUENCE IF NOT EXISTS product_type_seq START 1;
 CREATE TABLE ProductType
 (
     id   BIGINT PRIMARY KEY DEFAULT nextval('product_type_seq'),
     type VARCHAR(50) NOT NULL
 );
 
-CREATE SEQUENCE IF NOT EXISTS consultation_detail_seq;
+CREATE SEQUENCE IF NOT EXISTS consultation_detail_seq START 1;
 CREATE TABLE ConsultationDetail
 (
     consultationID BIGINT NOT NULL,
