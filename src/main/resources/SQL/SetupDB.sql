@@ -1,96 +1,83 @@
-DROP INDEX IF EXISTS idx_client_veterinarian_id;
-DROP INDEX IF EXISTS idx_horses_client_id;
-DROP INDEX IF EXISTS idx_consultation_horse_id;
-DROP INDEX IF EXISTS idx_consultation_detail_consultation_id;
-DROP INDEX IF EXISTS idx_consultation_detail_product_id;
-DROP TABLE IF EXISTS ConsultationDetail;
-DROP TABLE IF EXISTS Consultation;
-DROP TABLE IF EXISTS Horses;
-DROP TABLE IF EXISTS Client;
-DROP TABLE IF EXISTS ProductType;
-DROP TABLE IF EXISTS Veterinarian;
-DROP SEQUENCE IF EXISTS consultation_detail_seq;
-DROP SEQUENCE IF EXISTS product_type_seq;
-DROP SEQUENCE IF EXISTS consultation_seq;
-DROP SEQUENCE IF EXISTS horse_seq;
-DROP SEQUENCE IF EXISTS client_seq;
-DROP SEQUENCE IF EXISTS veterinarian_seq;
-
-CREATE SEQUENCE IF NOT EXISTS veterinarian_seq START 1;
-CREATE TABLE Veterinarian
+CREATE SEQUENCE IF NOT EXISTS user_seq START 1;
+CREATE TABLE users
 (
-    id       BIGINT PRIMARY KEY DEFAULT nextval('veterinarian_seq'),
-    username VARCHAR(50)  NOT NULL,
-    password TEXT         NOT NULL,
-    email    VARCHAR(100) NOT NULL,
-    phone    VARCHAR(15)  NOT NULL
+    id         BIGINT PRIMARY KEY DEFAULT NEXTVAL('user_seq'),
+    username   VARCHAR(50)  NOT NULL,
+    password   TEXT         NOT NULL,
+    first_name VARCHAR(50)  NOT NULL,
+    last_name  VARCHAR(50)  NOT NULL,
+    email      VARCHAR(100) NOT NULL,
+    phone      VARCHAR(15)  NOT NULL
 );
 
 CREATE SEQUENCE IF NOT EXISTS client_seq START 1;
-CREATE TABLE Client
+CREATE TABLE clients
 (
-    id             BIGINT PRIMARY KEY DEFAULT nextval('client_seq'),
-    name           VARCHAR(100)        NOT NULL,
-    email          VARCHAR(100) UNIQUE NOT NULL,
-    phone          VARCHAR(15)         NOT NULL,
-    veterinarianID BIGINT              NOT NULL,
-    FOREIGN KEY (veterinarianID)
-        REFERENCES Veterinarian (id)
+    id         BIGINT PRIMARY KEY DEFAULT NEXTVAL('client_seq'),
+    first_name VARCHAR(50)         NOT NULL,
+    last_name  VARCHAR(50)         NOT NULL,
+    email      VARCHAR(100) UNIQUE NOT NULL,
+    phone      VARCHAR(15)         NOT NULL,
+    user_id    BIGINT              NOT NULL,
+    FOREIGN KEY (user_id)
+        REFERENCES users (id)
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
 
 CREATE SEQUENCE IF NOT EXISTS horse_seq START 1;
-CREATE TABLE Horses
+CREATE TABLE horses
 (
-    id        BIGINT PRIMARY KEY DEFAULT nextval('horse_seq'),
-    horseName VARCHAR(100) NOT NULL,
-    age       BIGINT       NOT NULL,
-    clientID  BIGINT       NOT NULL,
-    FOREIGN KEY (clientID)
-        REFERENCES Client (id)
+    id        BIGINT PRIMARY KEY DEFAULT NEXTVAL('horse_seq'),
+    name      VARCHAR(50) NOT NULL,
+    age       BIGINT      NOT NULL,
+    client_id BIGINT      NOT NULL,
+    FOREIGN KEY (client_id)
+        REFERENCES clients (id)
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
 
 CREATE SEQUENCE IF NOT EXISTS consultation_seq START 1;
-CREATE TABLE Consultation
+CREATE TABLE consultations
 (
-    id        BIGINT PRIMARY KEY DEFAULT nextval('consultation_seq'),
+    id        BIGINT DEFAULT NEXTVAL('consultation_seq'),
+    horse_id  BIGINT                   NOT NULL,
     timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
-    horseID   BIGINT                   NOT NULL,
-    FOREIGN KEY (horseID)
-        REFERENCES Horses (id)
+    PRIMARY KEY (id, horse_id),
+    FOREIGN KEY (horse_id)
+        REFERENCES horses (id)
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
 
+
 CREATE SEQUENCE IF NOT EXISTS product_type_seq START 1;
-CREATE TABLE ProductType
+CREATE TABLE product_types
 (
-    id   BIGINT PRIMARY KEY DEFAULT nextval('product_type_seq'),
+    id   BIGINT PRIMARY KEY DEFAULT NEXTVAL('product_type_seq'),
     type VARCHAR(50) NOT NULL
 );
 
 CREATE SEQUENCE IF NOT EXISTS consultation_detail_seq START 1;
-CREATE TABLE ConsultationDetail
+CREATE TABLE consultationdetail
 (
-    consultationID BIGINT NOT NULL,
-    productID      BIGINT NOT NULL,
+    consultationid BIGINT NOT NULL,
+    productid      BIGINT NOT NULL,
     quantity       INT    NOT NULL DEFAULT 1,
-    PRIMARY KEY (consultationID, productID),
-    FOREIGN KEY (consultationID)
-        REFERENCES Consultation (id)
+    PRIMARY KEY (consultationid, productid),
+    FOREIGN KEY (consultationid)
+        REFERENCES consultation (id)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-    FOREIGN KEY (productID)
-        REFERENCES ProductType (id)
+    FOREIGN KEY (productid)
+        REFERENCES producttype (id)
         ON DELETE CASCADE
         ON UPDATE CASCADE
 );
 
-CREATE INDEX idx_client_veterinarian_id ON Client (veterinarianID);
-CREATE INDEX idx_horses_client_id ON Horses (clientID);
-CREATE INDEX idx_consultation_horse_id ON Consultation (horseID);
-CREATE INDEX idx_consultation_detail_consultation_id ON ConsultationDetail (consultationID);
-CREATE INDEX idx_consultation_detail_product_id ON ConsultationDetail (productID);
+CREATE INDEX idx_client_veterinarian_id ON client (veterinarianid);
+CREATE INDEX idx_horses_client_id ON horses (clientid);
+CREATE INDEX idx_consultation_horse_id ON consultation (horseid);
+CREATE INDEX idx_consultation_detail_consultation_id ON consultationdetail (consultationid);
+CREATE INDEX idx_consultation_detail_product_id ON consultationdetail (productid);
