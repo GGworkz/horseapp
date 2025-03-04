@@ -1,11 +1,12 @@
 package com.horseapp.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
+
 import com.horseapp.model.User;
 import com.horseapp.repository.UserRepository;
 
@@ -13,7 +14,6 @@ import com.horseapp.repository.UserRepository;
 public class UserService {
     private final UserRepository userRepository;
 
-    @Autowired
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -45,7 +45,7 @@ public class UserService {
         return userRepository.findById(id).get();
     }
 
-    public ResponseEntity<String> logIn(User user) {
+    public ResponseEntity<String> logIn(@RequestBody User user) {
         // Check if user exists
         User storedUser = null;
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {

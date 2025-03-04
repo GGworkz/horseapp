@@ -1,11 +1,12 @@
 package com.horseapp.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.horseapp.model.User;
 import com.horseapp.service.UserService;
+
+import jakarta.servlet.http.HttpSession;
 
 import java.util.NoSuchElementException;
 
@@ -13,10 +14,11 @@ import java.util.NoSuchElementException;
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
+    private final HttpSession session;
 
-    @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, HttpSession session) {
         this.userService = userService;
+        this.session = session;
     }
 
     @PostMapping("/signup")
@@ -26,7 +28,26 @@ public class UserController {
 
     @PostMapping("/signin")
     public ResponseEntity<String> postUserSignIn(@RequestBody User user) {
-        return userService.logIn(user);
+        if (session.getAttribute("username") != null) {
+            return new ResponseEntity<>("You are already logged in!", HttpStatus.BAD_REQUEST);
+        }
+        ResponseEntity<String> response =  userService.logIn(user);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            session.setAttribute("role", "vet");
+            session.setAttribute("username", user.getUsername());
+            session.setMaxInactiveInterval(5);
+        }
+        return response;
+    }
+
+    @PostMapping("/signout")
+    public ResponseEntity<String> postUserSignOut(@RequestBody User user) {
+        if (session.getAttribute("username") == null) {
+            return new ResponseEntity<>("You are not signed in", HttpStatus.BAD_REQUEST);
+        } else {
+            session.invalidate();
+        }
+        return new ResponseEntity<>("You have successfully signed out!", HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
