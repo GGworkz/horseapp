@@ -2,21 +2,15 @@ package com.horseapp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 import com.horseapp.model.User;
 import com.horseapp.service.UserService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
-
+import java.util.NoSuchElementException;
 
 @RestController
+@RequestMapping("/user")
 public class UserController {
     private final UserService userService;
 
@@ -25,19 +19,22 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/user/signup")
+    @PostMapping("/signup")
     public ResponseEntity<String> postUserSignUp(@RequestBody User user) {
         return userService.create(user);
     }
 
-    @GetMapping("/user/{id}")
-    public User getUser(@PathVariable long id) {
-        return userService.findById(id);
-    }
-    
-    @PostMapping("/user/signin")
+    @PostMapping("/signin")
     public ResponseEntity<String> postUserSignIn(@RequestBody User user) {
         return userService.logIn(user);
     }
-    
+
+    @GetMapping("/{id}")
+    public ResponseEntity<String> getUser(@PathVariable long id) {
+        try {
+            return new ResponseEntity<>( userService.findById(id).toString(), HttpStatus.OK);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>("User does not exist", HttpStatus.NOT_FOUND);
+        }
+    }
 }
