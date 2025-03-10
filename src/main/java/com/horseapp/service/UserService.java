@@ -4,6 +4,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.NoSuchElementException;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -80,5 +82,10 @@ public class UserService {
             hexString.append(String.format("%02x", b));
         }
         return hexString.toString();
+    }
+
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new NoSuchElementException("User not found"));
     }
 }

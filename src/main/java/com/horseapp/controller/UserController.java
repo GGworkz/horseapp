@@ -1,24 +1,22 @@
 package com.horseapp.controller;
 
+import com.horseapp.service.SessionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.horseapp.model.User;
 import com.horseapp.service.UserService;
 
-import jakarta.servlet.http.HttpSession;
-
-import java.util.NoSuchElementException;
-
 @RestController
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
-    private final HttpSession session;
+    private final SessionService sessionService;
 
-    public UserController(UserService userService, HttpSession session) {
+
+    public UserController(UserService userService, SessionService sessionService) {
         this.userService = userService;
-        this.session = session;
+        this.sessionService = sessionService;
     }
 
     @PostMapping("/signup")
@@ -28,34 +26,20 @@ public class UserController {
 
     @PostMapping("/signin")
     public ResponseEntity<String> postUserSignIn(@RequestBody User user) {
-        if (session.getAttribute("username") != null) {
-            return new ResponseEntity<>("You are already logged in!", HttpStatus.BAD_REQUEST);
-        }
-        ResponseEntity<String> response =  userService.logIn(user);
-        if (response.getStatusCode() == HttpStatus.OK) {
-            session.setAttribute("role", "vet");
-            session.setAttribute("username", user.getUsername());
-            session.setMaxInactiveInterval(5);
-        }
-        return response;
+        return sessionService.handleSignIn(userService, user);
     }
 
     @PostMapping("/signout")
     public ResponseEntity<String> postUserSignOut(@RequestBody User user) {
-        if (session.getAttribute("username") == null) {
-            return new ResponseEntity<>("You are not signed in", HttpStatus.BAD_REQUEST);
-        } else {
-            session.invalidate();
-        }
-        return new ResponseEntity<>("You have successfully signed out!", HttpStatus.OK);
+        return sessionService.handleSignOut();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<String> getUser(@PathVariable long id) {
+    @GetMapping("")
+    public ResponseEntity<User> getCurrentUser() {
         try {
-            return new ResponseEntity<>( userService.findById(id).toString(), HttpStatus.OK);
-        } catch (NoSuchElementException e) {
-            return new ResponseEntity<>("User does not exist", HttpStatus.NOT_FOUND);
+            return ResponseEntity.ok(userService.findByUsername(sessionService.getLoggedInUsername()));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 }
