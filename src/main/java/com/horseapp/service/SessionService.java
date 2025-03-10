@@ -6,6 +6,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import jakarta.servlet.http.HttpSession;
 import com.horseapp.model.User;
+import com.horseapp.model.Client;
 
 @Service
 public class SessionService {
@@ -30,6 +31,7 @@ public class SessionService {
         }
     }
 
+    // todo overload this bitch
     public ResponseEntity<String> handleSignIn(UserService userService, User user) {
         if (isUserLoggedIn()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -39,6 +41,19 @@ public class SessionService {
         ResponseEntity<String> response = userService.logIn(user);
         if (response.getStatusCode() == HttpStatus.OK) {
             createSession(user.getUsername(), "vet", 5);
+        }
+        return response;
+    }
+
+    public ResponseEntity<String> handleSignIn(ClientService clientService, Client client) {
+        if (isUserLoggedIn()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("You are already logged in!");
+        }
+
+        ResponseEntity<String> response = clientService.logIn(client);
+        if (response.getStatusCode() == HttpStatus.OK) {
+            createSession(client.getUsername(), "client", 5);
         }
         return response;
     }
@@ -60,3 +75,4 @@ public class SessionService {
         return session.getAttribute("username").toString();
     }
 }
+
