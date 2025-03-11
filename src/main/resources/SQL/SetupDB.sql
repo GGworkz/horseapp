@@ -16,15 +16,21 @@ CREATE SEQUENCE IF NOT EXISTS client_seq START 1;
 CREATE TABLE clients
 (
     id         BIGINT PRIMARY KEY DEFAULT NEXTVAL('client_seq'),
-    first_name VARCHAR(50)         NOT NULL,
-    last_name  VARCHAR(50)         NOT NULL,
-    email      VARCHAR(100) UNIQUE NOT NULL,
-    phone      VARCHAR(15)         NOT NULL,
-    user_id    BIGINT              NOT NULL,
-    FOREIGN KEY (user_id)
-        REFERENCES users (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
+    username   VARCHAR(50)  NOT NULL,
+    password   TEXT         NOT NULL,
+    first_name VARCHAR(50)  NOT NULL,
+    last_name  VARCHAR(50)  NOT NULL,
+    email      VARCHAR(100) NOT NULL,
+    phone      VARCHAR(15)  NOT NULL
+);
+
+-- Client Users
+CREATE TABLE client_user (
+    client_id INT,
+    user_id INT,
+    PRIMARY KEY (client_id, user_id),
+    FOREIGN KEY (client_id) REFERENCES clients(id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 -- Horses
