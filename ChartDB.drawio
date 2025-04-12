@@ -105,7 +105,7 @@
         <mxCell id="CKcXtdMAVw7ahf70taSX-52" value="quantity&amp;nbsp;&lt;span style=&quot;caret-color: rgb(150, 150, 150); color: rgb(150, 150, 150);&quot;&gt;int&lt;/span&gt;" style="text;strokeColor=none;fillColor=none;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=12;whiteSpace=wrap;html=1;" parent="CKcXtdMAVw7ahf70taSX-43" vertex="1">
           <mxGeometry y="146" width="320" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="CKcXtdMAVw7ahf70taSX-47" value="(key)&amp;nbsp;(consultation_id, horse_id, product_id, client_id)" style="text;strokeColor=none;fillColor=none;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=12;whiteSpace=wrap;html=1;" parent="CKcXtdMAVw7ahf70taSX-43" vertex="1">
+        <mxCell id="CKcXtdMAVw7ahf70taSX-47" value="(key)&amp;nbsp;(consultation_id, horse_id, product_id, customer_id)" style="text;strokeColor=none;fillColor=none;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=12;whiteSpace=wrap;html=1;" parent="CKcXtdMAVw7ahf70taSX-43" vertex="1">
           <mxGeometry y="176" width="320" height="30" as="geometry" />
         </mxCell>
         <mxCell id="CKcXtdMAVw7ahf70taSX-53" value="Product Catalogs" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;align=center;fontSize=14;" parent="1" vertex="1">
