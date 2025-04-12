@@ -39,7 +39,8 @@ public class User {
         return Objects.hash(username);
     }
 
+
     @ManyToMany(mappedBy = "users")
     @JsonBackReference 
-    private Set<Client> clients;
+    private Set<Customer> customers;
 }
