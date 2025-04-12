@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.Set;
-import com.horseapp.repository.ClientRepository;
+import com.horseapp.repository.CustomerRepository;
 import com.horseapp.repository.UserRepository;
 import com.horseapp.model.User;
 import com.horseapp.model.Client;
@@ -16,7 +16,7 @@ import com.horseapp.model.Client;
 public class ClientUserService {
 
     @Autowired
-    private ClientRepository clientRepository;
+    private CustomerRepository clientRepository;
 
     @Autowired
     private UserRepository userRepository;

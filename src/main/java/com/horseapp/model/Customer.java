@@ -17,8 +17,8 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Data
-@Table(name="clients")
-public class Client {
+@Table(name="customers")
+public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,7 +33,7 @@ public class Client {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
-        Client other = (Client) obj;
+        Customer other = (Customer) obj;
         return this.username.equals(other.username) && this.email.equals(other.email);
     }
 
@@ -44,8 +44,8 @@ public class Client {
 
     @ManyToMany
     @JoinTable(
-      name = "client_user", 
-      joinColumns = @JoinColumn(name = "client_id"), 
+      name = "customer_user",
+      joinColumns = @JoinColumn(name = "customer_id"),
       inverseJoinColumns = @JoinColumn(name = "user_id"))
     @JsonManagedReference 
     @JsonIgnore

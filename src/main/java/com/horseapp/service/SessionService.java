@@ -6,7 +6,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import jakarta.servlet.http.HttpSession;
 import com.horseapp.model.User;
-import com.horseapp.model.Client;
+import com.horseapp.model.Customer;
 
 @Service
 public class SessionService {
@@ -45,15 +45,15 @@ public class SessionService {
         return response;
     }
 
-    public ResponseEntity<String> handleSignIn(ClientService clientService, Client client) {
+    public ResponseEntity<String> handleSignIn(CustomerService customerService, Customer customer) {
         if (isUserLoggedIn()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("You are already logged in!");
         }
-        Client loggedInClient = clientService.findByUsername(client.getUsername());
-        ResponseEntity<String> response = clientService.logIn(client);
+        Customer loggedInCustomer = customerService.findByUsername(customer.getUsername());
+        ResponseEntity<String> response = customerService.logIn(customer);
         if (response.getStatusCode() == HttpStatus.OK) {
-            createSession(loggedInClient.getId(), loggedInClient.getUsername(), "client", 360);
+            createSession(loggedInCustomer.getId(), loggedInCustomer.getUsername(), "customer", 360);
         }
         return response;
     }
