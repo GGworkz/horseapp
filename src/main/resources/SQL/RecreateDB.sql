@@ -117,11 +117,11 @@ CREATE TABLE consultations
 -- Consultation Details
 CREATE TABLE consultation_details (
       consultation_id BIGINT NOT NULL,
-      user_id         BIGINT NOT NULL,
       horse_id        BIGINT NOT NULL,
       product_id      BIGINT NOT NULL,
+      user_id         BIGINT NOT NULL,
       quantity        INT    NOT NULL DEFAULT 1,
-      PRIMARY KEY (consultation_id, product_id),
+      PRIMARY KEY (consultation_id, horse_id, product_id),
       FOREIGN KEY (consultation_id, horse_id)
           REFERENCES consultations (id, horse_id),
       FOREIGN KEY (product_id, user_id)
