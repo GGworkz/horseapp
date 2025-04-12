@@ -115,20 +115,17 @@ CREATE TABLE consultations
 );
 
 -- Consultation Details
-CREATE TABLE consultation_details
-(
-    consultation_id BIGINT NOT NULL,
-    product_id      BIGINT NOT NULL,
-    quantity        INT    NOT NULL DEFAULT 1,
-    PRIMARY KEY (consultation_id, product_id),
-    FOREIGN KEY (consultation_id)
-        REFERENCES consultations (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE,
-    FOREIGN KEY (product_id)
-        REFERENCES product_catalogs (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
+CREATE TABLE consultation_details (
+      consultation_id BIGINT NOT NULL,
+      user_id         BIGINT NOT NULL,
+      horse_id        BIGINT NOT NULL,
+      product_id      BIGINT NOT NULL,
+      quantity        INT    NOT NULL DEFAULT 1,
+      PRIMARY KEY (consultation_id, product_id),
+      FOREIGN KEY (consultation_id, horse_id)
+          REFERENCES consultations (id, horse_id),
+      FOREIGN KEY (product_id, user_id)
+          REFERENCES product_catalogs (id, user_id)
 );
 
 -- Commonly looked up fields
