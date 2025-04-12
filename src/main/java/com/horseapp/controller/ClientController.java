@@ -1,12 +1,14 @@
 package com.horseapp.controller;
 
 import com.horseapp.service.SessionService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.horseapp.model.Client;
 import com.horseapp.service.ClientService;
 
+@Tag(name = "Client", description = "Client management APIs")
 @RestController
 @RequestMapping("/client")
 public class ClientController {

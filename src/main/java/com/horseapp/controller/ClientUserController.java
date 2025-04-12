@@ -1,6 +1,7 @@
 package com.horseapp.controller;
 
 import com.horseapp.service.SessionService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import com.horseapp.model.User;
 
 import java.util.Set;
 
+@Tag(name = "User-Client", description = "User Client Relationship APIs")
 @RestController
 @RequestMapping
 public class ClientUserController {
