@@ -63,7 +63,7 @@ CREATE TABLE product_catalogs
         ON UPDATE CASCADE
 );
 
--- Clients
+-- Customers
 CREATE SEQUENCE IF NOT EXISTS customer_seq START 1;
 CREATE TABLE customers (
     id         BIGINT PRIMARY KEY DEFAULT NEXTVAL('customer_seq'),
@@ -121,7 +121,7 @@ CREATE TABLE consultation_details (
       product_id      BIGINT NOT NULL,
       user_id         BIGINT NOT NULL,
       quantity        INT    NOT NULL DEFAULT 1,
-      PRIMARY KEY (consultation_id, horse_id, product_id),
+      PRIMARY KEY (consultation_id, horse_id, product_id, user_id),
       FOREIGN KEY (consultation_id, horse_id)
           REFERENCES consultations (id, horse_id),
       FOREIGN KEY (product_id, user_id)

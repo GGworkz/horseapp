@@ -1,12 +1,8 @@
 package com.horseapp.service;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import jakarta.servlet.http.HttpSession;
-import com.horseapp.model.User;
-import com.horseapp.model.Customer;
 
 @Service
 public class SessionService {
@@ -32,65 +28,24 @@ public class SessionService {
         }
     }
 
-    public ResponseEntity<String> handleSignIn(UserService userService, User user) {
-        if (isUserLoggedIn()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("You are already logged in!");
-        }
-        User loggedInUser = userService.findByUsername(user.getUsername());
-        ResponseEntity<String> response = userService.logIn(user);
-        if (response.getStatusCode() == HttpStatus.OK) {
-            createSession(loggedInUser.getId(), loggedInUser.getUsername(), "user", 360);
-        }
-        return response;
-    }
-
-    public ResponseEntity<String> handleSignIn(CustomerService customerService, Customer customer) {
-        if (isUserLoggedIn()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("You are already logged in!");
-        }
-        Customer loggedInCustomer = customerService.findByUsername(customer.getUsername());
-        ResponseEntity<String> response = customerService.logIn(customer);
-        if (response.getStatusCode() == HttpStatus.OK) {
-            createSession(loggedInCustomer.getId(), loggedInCustomer.getUsername(), "customer", 360);
-        }
-        return response;
-    }
-
-    public ResponseEntity<String> handleSignOut() {
+    public void destroySession() {
         HttpSession session = getSession(false);
         if (session != null) {
             session.invalidate();
-            return ResponseEntity.ok("Signed out successfully!");
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No active session found.");
-    }
-
-    public String getLoggedInUsername() {
-        HttpSession session = getSession(false);
-        if (session == null || session.getAttribute("username") == null) {
-            throw new IllegalStateException("No user signed in");
-        }
-        return session.getAttribute("username").toString();
-    }
-
-    public String getLoggedInRole() {
-        HttpSession session = getSession(false);
-        if (session == null || session.getAttribute("role") == null) {
-            throw new IllegalStateException("No user signed in");
-        } else {
-            return session.getAttribute("role").toString();
         }
     }
 
-    public int getLoggedInID() {
+    public Object getAttribute(String key) {
         HttpSession session = getSession(false);
-        if (session == null || session.getAttribute("id") == null) {
-            throw new IllegalStateException("No user signed in");
-        } else {
-            return Integer.parseInt(session.getAttribute("id").toString());
+        return (session != null) ? session.getAttribute(key) : null;
+    }
+
+    public void setAttribute(String key, Object value) {
+        HttpSession session = getSession(true);
+        if (session != null) {
+            session.setAttribute(key, value);
         }
     }
+
 }
 

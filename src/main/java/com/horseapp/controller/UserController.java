@@ -1,24 +1,29 @@
 package com.horseapp.controller;
 
-import com.horseapp.service.SessionService;
+import com.horseapp.model.User;
+import com.horseapp.service.AuthenticationService;
+import com.horseapp.service.AuthorizationService;
+import com.horseapp.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.horseapp.model.User;
-import com.horseapp.service.UserService;
 
 @Tag(name = "User", description = "User management APIs")
 @RestController
 @RequestMapping("/user")
 public class UserController {
+
     private final UserService userService;
-    private final SessionService sessionService;
+    private final AuthenticationService authenticationService;
+    private final AuthorizationService authorizationService;
 
-
-    public UserController(UserService userService, SessionService sessionService) {
+    public UserController(UserService userService,
+                          AuthenticationService authenticationService,
+                          AuthorizationService authorizationService) {
         this.userService = userService;
-        this.sessionService = sessionService;
+        this.authenticationService = authenticationService;
+        this.authorizationService = authorizationService;
     }
 
     @PostMapping("/signup")
@@ -28,18 +33,19 @@ public class UserController {
 
     @PostMapping("/signin")
     public ResponseEntity<String> postUserSignIn(@RequestBody User user) {
-        return sessionService.handleSignIn(userService, user);
+        return authenticationService.signInUser(user);
     }
 
     @PostMapping("/signout")
-    public ResponseEntity<String> postUserSignOut(@RequestBody User user) {
-        return sessionService.handleSignOut();
+    public ResponseEntity<String> postUserSignOut() {
+        return authenticationService.signOut();
     }
 
     @GetMapping("")
     public ResponseEntity<User> getCurrentUser() {
         try {
-            return ResponseEntity.ok(userService.findByUsername(sessionService.getLoggedInUsername()));
+            String username = authorizationService.getLoggedInUsername(); // new method
+            return ResponseEntity.ok(userService.findByUsername(username));
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
