@@ -2,7 +2,6 @@ package com.horseapp.service;
 
 import com.horseapp.model.Customer;
 import com.horseapp.repository.CustomerRepository;
-import com.horseapp.util.PasswordHasher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;

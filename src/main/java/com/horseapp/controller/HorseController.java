@@ -7,9 +7,8 @@ import com.horseapp.service.HorseService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Tag(name = "Horse", description = "Horse management APIs")
 @RestController
@@ -28,39 +27,24 @@ public class HorseController {
         this.customerUserService = customerUserService;
     }
 
-    private boolean hasAccessToCustomer(Long customerId) {
-        String role = authorizationService.getLoggedInRole();
-        long id = authorizationService.getLoggedInId();
-
-        return (role.equals("customer") && id == customerId)
-                || (role.equals("user") && customerUserService.getCustomers(id).stream()
-                .anyMatch(c -> c.getId().equals(customerId)));
-    }
-
+    @PreAuthorize("@accessGuard.hasCustomerAccess(#customerId)")
     @GetMapping
     public ResponseEntity<?> getHorses(@PathVariable Long customerId) {
-        if (!hasAccessToCustomer(customerId)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
-        }
         return ResponseEntity.ok(horseService.getHorsesForCustomer(customerId));
     }
 
+    @PreAuthorize("@accessGuard.hasCustomerAccess(#customerId)")
     @PostMapping
     public ResponseEntity<?> createHorse(@PathVariable Long customerId, @RequestBody Horse horse) {
-        if (!hasAccessToCustomer(customerId)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
-        }
-        horse.getCustomer().setId(customerId); // ensure correct ownership
+        horse.getCustomer().setId(customerId);
         return ResponseEntity.status(HttpStatus.CREATED).body(horseService.createHorse(horse));
     }
 
+    @PreAuthorize("@accessGuard.hasCustomerAccess(#customerId)")
     @PutMapping("/{horseId}")
     public ResponseEntity<?> updateHorse(@PathVariable Long customerId,
                                          @PathVariable Long horseId,
                                          @RequestBody Horse horse) {
-        if (!hasAccessToCustomer(customerId)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
-        }
         if (!horseService.getHorseById(horseId).isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Horse not found");
         }
@@ -69,11 +53,9 @@ public class HorseController {
         return ResponseEntity.ok(horseService.updateHorse(horse));
     }
 
+    @PreAuthorize("@accessGuard.hasCustomerAccess(#customerId)")
     @DeleteMapping("/{horseId}")
     public ResponseEntity<?> deleteHorse(@PathVariable Long customerId, @PathVariable Long horseId) {
-        if (!hasAccessToCustomer(customerId)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
-        }
         if (!horseService.getHorseById(horseId).isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Horse not found");
         }

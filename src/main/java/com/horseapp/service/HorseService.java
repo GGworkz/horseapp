@@ -2,6 +2,7 @@ package com.horseapp.service;
 
 import com.horseapp.model.Horse;
 import com.horseapp.repository.HorseRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +23,11 @@ public class HorseService {
 
     public Optional<Horse> getHorseById(Long id) {
         return horseRepository.findById(id);
+    }
+
+    public Horse getHorseByIdOrThrow(Long id) {
+        return horseRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Horse not found"));
     }
 
     public Horse createHorse(Horse horse) {

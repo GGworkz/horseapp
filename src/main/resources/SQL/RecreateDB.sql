@@ -49,19 +49,18 @@ CREATE TABLE users
 
 -- Product Catalogs
 CREATE SEQUENCE IF NOT EXISTS product_catalog_seq START 1;
-CREATE TABLE product_catalogs
-(
-    id          BIGINT DEFAULT NEXTVAL('product_catalog_seq'),
-    name        VARCHAR(50)    NOT NULL,
-    type        VARCHAR(20)    NOT NULL,
-    price       NUMERIC(10, 2) NOT NULL,
-    user_id     BIGINT         NOT NULL,
-    PRIMARY KEY (id, user_id),
+CREATE TABLE product_catalogs (
+    id       BIGINT PRIMARY KEY DEFAULT NEXTVAL('product_catalog_seq'),
+    name     VARCHAR(50)    NOT NULL,
+    type     VARCHAR(20)    NOT NULL,
+    price    NUMERIC(10, 2) NOT NULL,
+    user_id  BIGINT         NOT NULL,
     FOREIGN KEY (user_id)
-        REFERENCES users (id)
-        ON DELETE CASCADE
-        ON UPDATE CASCADE
+             REFERENCES users (id)
+             ON DELETE CASCADE
+             ON UPDATE CASCADE
 );
+
 
 -- Customers
 CREATE SEQUENCE IF NOT EXISTS customer_seq START 1;
@@ -104,10 +103,9 @@ CREATE TABLE horses
 CREATE SEQUENCE IF NOT EXISTS consultation_seq START 1;
 CREATE TABLE consultations
 (
-    id        BIGINT DEFAULT NEXTVAL('consultation_seq'),
+    id        BIGINT PRIMARY KEY DEFAULT NEXTVAL('consultation_seq'),
     horse_id  BIGINT                   NOT NULL,
     timestamp TIMESTAMP WITH TIME ZONE,
-    PRIMARY KEY (id, horse_id),
     FOREIGN KEY (horse_id)
         REFERENCES horses (id)
         ON DELETE CASCADE
@@ -121,11 +119,11 @@ CREATE TABLE consultation_details (
       product_id      BIGINT NOT NULL,
       user_id         BIGINT NOT NULL,
       quantity        INT    NOT NULL DEFAULT 1,
-      PRIMARY KEY (consultation_id, horse_id, product_id, user_id),
-      FOREIGN KEY (consultation_id, horse_id)
-          REFERENCES consultations (id, horse_id),
-      FOREIGN KEY (product_id, user_id)
-          REFERENCES product_catalogs (id, user_id)
+      PRIMARY KEY (consultation_id, product_id, user_id),
+      FOREIGN KEY (consultation_id)
+          REFERENCES consultations (id),
+      FOREIGN KEY (product_id)
+          REFERENCES product_catalogs (id)
 );
 
 -- Commonly looked up fields

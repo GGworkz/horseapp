@@ -1,4 +1,3 @@
-
 INSERT INTO consultation_details (consultation_id, user_id, horse_id, product_id, quantity)
 VALUES (1, 5, 479, 249, 2);
 INSERT INTO consultation_details (consultation_id, user_id, horse_id, product_id, quantity)
