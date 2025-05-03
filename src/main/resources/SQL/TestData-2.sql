@@ -3222,3 +3222,9 @@ INSERT INTO consultations (id, horse_id, timestamp)
 VALUES (9, 882, NOW());
 INSERT INTO consultations (id, horse_id, timestamp)
 VALUES (10, 895, NOW());
+INSERT INTO consultations (id, horse_id, timestamp)
+VALUES (11, 999, NOW());
+INSERT INTO consultations (id, horse_id, timestamp)
+VALUES (12, 1000, NOW());
+INSERT INTO consultations (id, horse_id, timestamp)
+VALUES (13, 90, NOW());
