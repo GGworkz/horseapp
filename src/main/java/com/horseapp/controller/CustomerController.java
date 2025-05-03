@@ -5,6 +5,7 @@ import com.horseapp.service.AuthenticationService;
 import com.horseapp.service.AuthorizationService;
 import com.horseapp.service.CustomerService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,12 +28,12 @@ public class CustomerController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<String> postCustomerSignUp(@RequestBody Customer customer) {
+    public ResponseEntity<String> postCustomerSignUp(@Valid @RequestBody Customer customer) {
         return customerService.create(customer);
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<String> postCustomerSignIn(@RequestBody Customer customer) {
+    public ResponseEntity<String> postCustomerSignIn(@Valid @RequestBody Customer customer) {
         return authenticationService.signInCustomer(customer);
     }
 
@@ -50,4 +51,23 @@ public class CustomerController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
+
+    @DeleteMapping
+    public ResponseEntity<String> deleteCurrentCustomer() {
+        try {
+            long customerId = authorizationService.getLoggedInId();
+            String role = authorizationService.getLoggedInRole();
+
+            if (!"customer".equals(role)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only customers can delete their account");
+            }
+
+            customerService.deleteById(customerId);
+            authenticationService.signOut();
+            return ResponseEntity.ok("User deleted, session ended");
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not logged in");
+        }
+    }
+
 }

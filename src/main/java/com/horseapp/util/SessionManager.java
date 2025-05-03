@@ -1,24 +1,19 @@
-package com.horseapp.service;
-import org.springframework.stereotype.Service;
+package com.horseapp.util;
+
+import jakarta.servlet.http.HttpSession;
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import jakarta.servlet.http.HttpSession;
 
-@Service
-public class SessionService {
+@Component
+public class SessionManager {
 
     public HttpSession getSession(boolean create) {
-        ServletRequestAttributes attr =
-                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        var attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         return (attr != null) ? attr.getRequest().getSession(create) : null;
     }
 
-    public boolean isUserLoggedIn() {
-        HttpSession session = getSession(false);
-        return session != null && session.getAttribute("username") != null;
-    }
-
-    public void createSession(long id, String username, String role, int timeout) {
+    public void create(long id, String username, String role, int timeout) {
         HttpSession session = getSession(true);
         if (session != null) {
             session.setAttribute("id", id);
@@ -28,24 +23,20 @@ public class SessionService {
         }
     }
 
-    public void destroySession() {
+    public void destroy() {
         HttpSession session = getSession(false);
         if (session != null) {
             session.invalidate();
         }
     }
 
-    public Object getAttribute(String key) {
+    public Object get(String key) {
         HttpSession session = getSession(false);
         return (session != null) ? session.getAttribute(key) : null;
     }
 
-    public void setAttribute(String key, Object value) {
-        HttpSession session = getSession(true);
-        if (session != null) {
-            session.setAttribute(key, value);
-        }
+    public boolean isLoggedIn() {
+        HttpSession session = getSession(false);
+        return session != null && session.getAttribute("username") != null;
     }
-
 }
-

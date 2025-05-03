@@ -38,7 +38,7 @@ CREATE TABLE users
 (
     id         BIGINT PRIMARY KEY DEFAULT NEXTVAL('user_seq'),
     username   VARCHAR(50)  NOT NULL,
-    password   TEXT         NOT NULL,
+    password   VARCHAR(100) NOT NULL,
     first_name VARCHAR(50)  NOT NULL,
     last_name  VARCHAR(50)  NOT NULL,
     email      VARCHAR(100) NOT NULL,
@@ -68,7 +68,7 @@ CREATE SEQUENCE IF NOT EXISTS customer_seq START 1;
 CREATE TABLE customers (
     id         BIGINT PRIMARY KEY DEFAULT NEXTVAL('customer_seq'),
     username   VARCHAR(50)  NOT NULL,
-    password   TEXT         NOT NULL,
+    password   VARCHAR(100) NOT NULL,
     first_name VARCHAR(50)  NOT NULL,
     last_name  VARCHAR(50)  NOT NULL,
     email      VARCHAR(100) NOT NULL,

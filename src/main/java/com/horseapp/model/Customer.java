@@ -3,6 +3,7 @@ package com.horseapp.model;
 import java.util.Objects;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import java.util.Set;
 
@@ -20,6 +21,7 @@ public class Customer {
     private Long id;
 
     private String username;
+    @Size(max = 72, message = "Password must be 72 characters or fewer")
     private String password;
     private String firstName;
     private String lastName;
