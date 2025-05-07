@@ -2,14 +2,13 @@ package com.horseapp.service;
 
 import java.util.NoSuchElementException;
 import jakarta.persistence.EntityNotFoundException;
+
 import com.horseapp.model.User;
 import com.horseapp.repository.UserRepository;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
+
 
 @Service
 public class UserService {
@@ -21,40 +20,33 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public ResponseEntity<String> create(User user) {
+    public String create(User user) {
         for (User currentUser : userRepository.findAll()) {
             if (user.equals(currentUser)) {
-                return new ResponseEntity<>("Username or Email Already Exists.", HttpStatus.BAD_REQUEST);
+                return "exists";
             }
         }
 
         if (user.getPassword().length() > 72) {
-            return new ResponseEntity<>("Password too long", HttpStatus.BAD_REQUEST);
+            return "too_long";
         }
 
         String hashedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(hashedPassword);
         userRepository.save(user);
-        return new ResponseEntity<>("User has been created", HttpStatus.OK);
+        return "created";
     }
 
-    public ResponseEntity<String> logIn(@RequestBody User user) {
+    public boolean isLoginValid(User user) {
         User storedUser = userRepository.findByUsername(user.getUsername()).orElse(null);
-        if (storedUser == null) {
-            return new ResponseEntity<>("User does not exist", HttpStatus.BAD_REQUEST);
-        }
-
-        if (!passwordEncoder.matches(user.getPassword(), storedUser.getPassword())) {
-            return new ResponseEntity<>("Wrong password", HttpStatus.BAD_REQUEST);
-        }
-
-        return new ResponseEntity<>("Successful login", HttpStatus.OK);
+        return storedUser != null && passwordEncoder.matches(user.getPassword(), storedUser.getPassword());
     }
 
     public User update(User user) {
         if (!userRepository.existsById(user.getId())) {
             throw new EntityNotFoundException("User not found");
         }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 

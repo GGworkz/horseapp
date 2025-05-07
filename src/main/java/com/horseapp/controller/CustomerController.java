@@ -8,6 +8,7 @@ import com.horseapp.model.Customer;
 import com.horseapp.service.AuthenticationService;
 import com.horseapp.service.AuthorizationService;
 import com.horseapp.service.CustomerService;
+import com.horseapp.util.SessionManager;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,28 +28,47 @@ public class CustomerController {
     private final CustomerService customerService;
     private final AuthenticationService authenticationService;
     private final AuthorizationService authorizationService;
+    private final SessionManager sessionManager;
 
     public CustomerController(CustomerService customerService,
                               AuthenticationService authenticationService,
-                              AuthorizationService authorizationService) {
+                              AuthorizationService authorizationService, SessionManager sessionManager) {
         this.customerService = customerService;
         this.authenticationService = authenticationService;
         this.authorizationService = authorizationService;
+        this.sessionManager = sessionManager;
     }
 
     @PostMapping("/signup")
     public ResponseEntity<String> postCustomerSignUp(@Valid @RequestBody Customer customer) {
-        return customerService.create(customer);
+        String result = customerService.create(customer);
+
+        return switch (result) {
+            case "exists" -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username or Email Already Exists.");
+            case "too_long" -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password too long");
+            case "created" -> ResponseEntity.ok("Customer has been created");
+            default -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error");
+        };
     }
 
     @PostMapping("/signin")
     public ResponseEntity<String> postCustomerSignIn(@Valid @RequestBody Customer customer) {
-        return authenticationService.signInCustomer(customer);
+        if (sessionManager.isLoggedIn()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Already logged in");
+        }
+
+        boolean success = authenticationService.signInCustomer(customer);
+        if (!success) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid username or password");
+        }
+
+        return ResponseEntity.ok("Successful login");
     }
 
     @PostMapping("/signout")
     public ResponseEntity<String> postCustomerSignOut() {
-        return authenticationService.signOut();
+        authenticationService.signOut();
+        return ResponseEntity.ok("Signed out successfully");
     }
 
     @GetMapping("")
@@ -83,7 +103,6 @@ public class CustomerController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not logged in");
         }
     }
-
 
     @DeleteMapping
     public ResponseEntity<String> deleteCurrentCustomer() {

@@ -6,8 +6,6 @@ import com.horseapp.model.User;
 import com.horseapp.model.Customer;
 import com.horseapp.util.SessionManager;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,44 +23,41 @@ public class AuthenticationService {
         this.customerService = customerService;
     }
 
-    public ResponseEntity<String> signInUser(User user) {
+    public boolean signInUser(User user) {
         if (sessionManager.isLoggedIn()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Already logged in");
+            return false;
         }
 
         try {
             User found = userService.findByUsername(user.getUsername());
-            ResponseEntity<String> result = userService.logIn(user);
-            if (result.getStatusCode() == HttpStatus.OK) {
+            if (userService.isLoginValid(user)) {
                 sessionManager.create(found.getId(), found.getUsername(), "user", 360);
+                return true;
             }
-            return result;
+            return false;
         } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+            return false;
         }
     }
 
-
-    public ResponseEntity<String> signInCustomer(Customer customer) {
+    public boolean signInCustomer(Customer customer) {
         if (sessionManager.isLoggedIn()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Already logged in");
+            return false;
         }
 
         try {
             Customer found = customerService.findByUsername(customer.getUsername());
-            ResponseEntity<String> result = customerService.logIn(customer);
-            if (result.getStatusCode() == HttpStatus.OK) {
+            if (customerService.isLoginValid(customer)) {
                 sessionManager.create(found.getId(), found.getUsername(), "customer", 360);
+                return true;
             }
-            return result;
+            return false;
         } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer not found");
+            return false;
         }
     }
 
-
-    public ResponseEntity<String> signOut() {
+    public void signOut() {
         sessionManager.destroy();
-        return ResponseEntity.ok("Signed out successfully");
     }
 }

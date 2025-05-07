@@ -8,6 +8,7 @@ import com.horseapp.model.User;
 import com.horseapp.service.AuthenticationService;
 import com.horseapp.service.AuthorizationService;
 import com.horseapp.service.UserService;
+import com.horseapp.util.SessionManager;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,28 +28,47 @@ public class UserController {
     private final UserService userService;
     private final AuthenticationService authenticationService;
     private final AuthorizationService authorizationService;
+    private final SessionManager sessionManager;
 
     public UserController(UserService userService,
                           AuthenticationService authenticationService,
-                          AuthorizationService authorizationService) {
+                          AuthorizationService authorizationService, SessionManager sessionManager) {
         this.userService = userService;
         this.authenticationService = authenticationService;
         this.authorizationService = authorizationService;
+        this.sessionManager = sessionManager;
     }
 
     @PostMapping("/signup")
     public ResponseEntity<String> postUserSignUp(@Valid @RequestBody User user) {
-        return userService.create(user);
+        String result = userService.create(user);
+
+        return switch (result) {
+            case "exists" -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username or Email Already Exists.");
+            case "too_long" -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password too long");
+            case "created" -> ResponseEntity.ok("User has been created");
+            default -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error");
+        };
     }
 
     @PostMapping("/signin")
     public ResponseEntity<String> postUserSignIn(@Valid @RequestBody User user) {
-        return authenticationService.signInUser(user);
+        if (sessionManager.isLoggedIn()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Already logged in");
+        }
+
+        boolean success = authenticationService.signInUser(user);
+        if (!success) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid username or password");
+        }
+
+        return ResponseEntity.ok("Successful login");
     }
 
     @PostMapping("/signout")
-    public ResponseEntity<String> postUserSignOut() {
-        return authenticationService.signOut();
+    public ResponseEntity<String> postCustomerSignOut() {
+        authenticationService.signOut();
+        return ResponseEntity.ok("Signed out successfully");
     }
 
     @GetMapping("")

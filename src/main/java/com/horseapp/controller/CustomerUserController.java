@@ -57,7 +57,16 @@ public class CustomerUserController {
     public ResponseEntity<String> addUserToCustomer(@PathVariable Long customerId, @PathVariable Long userId) {
         try {
             authorizationService.validateCustomerAccess(customerId);
-            return customerUserService.addUserToCustomer(customerId, userId);
+
+            String result = customerUserService.addUserToCustomer(customerId, userId);
+
+            return switch (result) {
+                case "already_enrolled" -> ResponseEntity.status(HttpStatus.CONFLICT).body("Veterinarian already enrolled");
+                case "success" -> ResponseEntity.ok("User added to customer successfully");
+                case "not_found" -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Customer or User not found");
+                default -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Unexpected error");
+            };
+
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized action");
         }
