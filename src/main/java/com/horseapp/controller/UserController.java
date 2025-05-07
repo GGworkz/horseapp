@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import com.horseapp.dto.UserUpdateDTO;
+import com.horseapp.dto.UserResponseDTO;
 import com.horseapp.model.User;
 import com.horseapp.service.AuthenticationService;
 import com.horseapp.service.AuthorizationService;
@@ -72,17 +74,27 @@ public class UserController {
     }
 
     @GetMapping("")
-    public ResponseEntity<User> getCurrentUser() {
+    public ResponseEntity<UserResponseDTO> getCurrentUser() {
         try {
-            String username = authorizationService.getLoggedInUsername(); // new method
-            return ResponseEntity.ok(userService.findByUsername(username));
+            String username = authorizationService.getLoggedInUsername();
+            User user = userService.findByUsername(username);
+
+            UserResponseDTO dto = new UserResponseDTO();
+            dto.setUsername(user.getUsername());
+            dto.setFirstName(user.getFirstName());
+            dto.setLastName(user.getLastName());
+            dto.setEmail(user.getEmail());
+            dto.setPhone(user.getPhone());
+
+            return ResponseEntity.ok(dto);
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
 
+
     @PutMapping
-    public ResponseEntity<?> updateCurrentUser(@Valid @RequestBody User updates) {
+    public ResponseEntity<?> updateCurrentUser(@Valid @RequestBody UserUpdateDTO updates) {
         try {
             long userId = authorizationService.getLoggedInId();
             String role = authorizationService.getLoggedInRole();
@@ -103,6 +115,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not logged in");
         }
     }
+
 
     @DeleteMapping
     public ResponseEntity<String> deleteCurrentUser() {
