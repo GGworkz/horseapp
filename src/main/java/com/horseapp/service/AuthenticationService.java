@@ -1,13 +1,14 @@
 package com.horseapp.service;
 
+import java.util.NoSuchElementException;
+
 import com.horseapp.model.User;
 import com.horseapp.model.Customer;
 import com.horseapp.util.SessionManager;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
-import java.util.NoSuchElementException;
 
 @Service
 public class AuthenticationService {

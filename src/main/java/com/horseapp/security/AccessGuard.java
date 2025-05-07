@@ -2,6 +2,7 @@ package com.horseapp.security;
 
 import com.horseapp.service.AuthorizationService;
 import com.horseapp.service.CustomerUserService;
+
 import org.springframework.stereotype.Component;
 
 @Component("accessGuard")

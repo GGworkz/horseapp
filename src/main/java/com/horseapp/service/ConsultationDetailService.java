@@ -1,11 +1,23 @@
 package com.horseapp.service;
 
-import com.horseapp.model.*;
-import com.horseapp.repository.*;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
+
+import jakarta.persistence.EntityNotFoundException;
+
+import com.horseapp.model.Consultation;
+import com.horseapp.model.ConsultationDetail;
+import com.horseapp.model.ConsultationDetailId;
+import com.horseapp.model.Horse;
+import com.horseapp.model.ProductCatalog;
+import com.horseapp.model.User;
+
+import com.horseapp.repository.ConsultationDetailRepository;
+import com.horseapp.repository.ConsultationRepository;
+import com.horseapp.repository.HorseRepository;
+import com.horseapp.repository.ProductCatalogRepository;
+import com.horseapp.repository.UserRepository;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public class ConsultationDetailService {
@@ -56,6 +68,15 @@ public class ConsultationDetailService {
         detail.setProduct(product);
 
         return detailRepo.save(detail);
+    }
+
+    public ConsultationDetail update(ConsultationDetail detail) {
+        return detailRepo.save(detail);
+    }
+
+    public ConsultationDetail getDetail(Long consultationId, Long productId) {
+        return detailRepo.findByConsultationIdAndProductId(consultationId, productId)
+                .orElseThrow(() -> new EntityNotFoundException("Consultation detail not found"));
     }
 
     public void deleteDetail(Long consultationId, Long productId) {

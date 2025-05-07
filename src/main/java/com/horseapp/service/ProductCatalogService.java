@@ -1,11 +1,13 @@
 package com.horseapp.service;
 
-import com.horseapp.model.ProductCatalog;
-import com.horseapp.repository.ProductCatalogRepository;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
+
+import com.horseapp.model.ProductCatalog;
+import com.horseapp.repository.ProductCatalogRepository;
+
+import org.springframework.stereotype.Service;
+
 
 @Service
 public class ProductCatalogService {

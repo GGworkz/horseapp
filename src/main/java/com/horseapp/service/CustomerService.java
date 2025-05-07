@@ -1,13 +1,17 @@
 package com.horseapp.service;
 
+import java.util.NoSuchElementException;
+
+import jakarta.persistence.EntityNotFoundException;
+
 import com.horseapp.model.Customer;
 import com.horseapp.repository.CustomerRepository;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
-import java.util.NoSuchElementException;
 
 @Service
 public class CustomerService {
@@ -49,6 +53,13 @@ public class CustomerService {
         }
 
         return new ResponseEntity<>("Successful login", HttpStatus.OK);
+    }
+
+    public Customer update(Customer customer) {
+        if (!customerRepository.existsById(customer.getId())) {
+            throw new EntityNotFoundException("Customer not found");
+        }
+        return customerRepository.save(customer);
     }
 
     public void deleteById(Long id) {

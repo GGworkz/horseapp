@@ -1,17 +1,28 @@
 package com.horseapp.controller;
 
-import com.horseapp.model.*;
-import com.horseapp.service.*;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+
 import jakarta.persistence.EntityNotFoundException;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+import com.horseapp.model.ConsultationDetail;
+import com.horseapp.service.AuthorizationService;
+import com.horseapp.service.ConsultationDetailService;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
-@Tag(name = "Consultation Details", description = "Link products to consultations")
+@Tag(name = "Consultation Details", description = "Consultation itemized per product management")
 @RestController
 @RequestMapping("/customer/{customerId}/horses/{horseId}/consultations/{consultationId}/details")
 public class ConsultationDetailController {
@@ -55,4 +66,20 @@ public class ConsultationDetailController {
         detailService.deleteDetail(consultationId, productId);
         return ResponseEntity.ok("Detail deleted");
     }
+
+    @PreAuthorize("@accessGuard.hasCustomerAccess(#customerId)")
+    @PutMapping("/{productId}")
+    public ResponseEntity<?> updateDetail(@PathVariable Long customerId,
+                                          @PathVariable Long consultationId,
+                                          @PathVariable Long productId,
+                                          @RequestBody ConsultationDetail incomingDetail) {
+        try {
+            ConsultationDetail existing = detailService.getDetail(consultationId, productId);
+            existing.setQuantity(incomingDetail.getQuantity());
+            return ResponseEntity.ok(detailService.update(existing));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
 }

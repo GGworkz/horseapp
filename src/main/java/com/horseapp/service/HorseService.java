@@ -1,12 +1,14 @@
 package com.horseapp.service;
 
-import com.horseapp.model.Horse;
-import com.horseapp.repository.HorseRepository;
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
+
+import jakarta.persistence.EntityNotFoundException;
+
+import com.horseapp.model.Horse;
+import com.horseapp.repository.HorseRepository;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public class HorseService {

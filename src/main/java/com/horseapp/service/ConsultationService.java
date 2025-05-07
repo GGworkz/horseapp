@@ -1,11 +1,13 @@
 package com.horseapp.service;
 
-import com.horseapp.model.Consultation;
-import com.horseapp.repository.ConsultationRepository;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
+
+import com.horseapp.model.Consultation;
+import com.horseapp.repository.ConsultationRepository;
+
+import org.springframework.stereotype.Service;
+
 
 @Service
 public class ConsultationService {
@@ -35,4 +37,5 @@ public class ConsultationService {
     public void delete(Long id) {
         repository.deleteById(id);
     }
+
 }

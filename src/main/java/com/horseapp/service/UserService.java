@@ -1,13 +1,15 @@
 package com.horseapp.service;
 
+import java.util.NoSuchElementException;
+import jakarta.persistence.EntityNotFoundException;
+import com.horseapp.model.User;
+import com.horseapp.repository.UserRepository;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import java.util.NoSuchElementException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
-import com.horseapp.model.User;
-import com.horseapp.repository.UserRepository;
 
 @Service
 public class UserService {
@@ -49,10 +51,16 @@ public class UserService {
         return new ResponseEntity<>("Successful login", HttpStatus.OK);
     }
 
+    public User update(User user) {
+        if (!userRepository.existsById(user.getId())) {
+            throw new EntityNotFoundException("User not found");
+        }
+        return userRepository.save(user);
+    }
+
     public void deleteById(Long id) {
         userRepository.deleteById(id);
     }
-
 
     public User findById(long id) {
         return userRepository.findById(id).get();

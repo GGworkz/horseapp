@@ -1,6 +1,7 @@
 package com.horseapp.util;
 
 import jakarta.servlet.http.HttpSession;
+
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;

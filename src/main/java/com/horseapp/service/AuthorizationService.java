@@ -1,6 +1,7 @@
 package com.horseapp.service;
 
 import com.horseapp.util.SessionManager;
+
 import org.springframework.stereotype.Service;
 
 @Service

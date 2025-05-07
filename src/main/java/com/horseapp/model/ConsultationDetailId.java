@@ -1,9 +1,9 @@
 package com.horseapp.model;
 
-import lombok.Data;
-
 import java.io.Serializable;
 import java.util.Objects;
+
+import lombok.Data;
 
 @Data
 public class ConsultationDetailId implements Serializable {
