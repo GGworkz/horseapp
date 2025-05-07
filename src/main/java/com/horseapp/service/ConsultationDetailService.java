@@ -1,9 +1,14 @@
 package com.horseapp.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import jakarta.persistence.EntityNotFoundException;
 
+import com.horseapp.dto.ConsultationTotalDTO;
+import com.horseapp.dto.ConsultationDetailCreateDTO;
+import com.horseapp.dto.ConsultationDetailResponseDTO;
+import com.horseapp.dto.ConsultationDetailUpdateDTO;
 import com.horseapp.model.Consultation;
 import com.horseapp.model.ConsultationDetail;
 import com.horseapp.model.ConsultationDetailId;
@@ -47,30 +52,88 @@ public class ConsultationDetailService {
         return detailRepo.findByConsultationId(consultationId);
     }
 
-    public ConsultationDetail createDetail(ConsultationDetail detail, Long horseId, Long consultationId) {
+    public List<ConsultationDetailResponseDTO> findDetailResponsesByConsultationId(Long consultationId) {
+        List<ConsultationDetail> details = detailRepo.findByConsultationId(consultationId);
+
+        return details.stream().map(detail -> {
+            ConsultationDetailResponseDTO dto = new ConsultationDetailResponseDTO();
+            dto.setConsultationId(detail.getConsultation().getId());
+            dto.setProductId(detail.getProduct().getId());
+            dto.setProductName(detail.getProduct().getName());
+            dto.setProductPrice(detail.getProduct().getPrice());
+            dto.setProductType(detail.getProduct().getType());
+            dto.setQuantity(detail.getQuantity());
+            return dto;
+        }).toList();
+    }
+
+    public ConsultationTotalDTO getTotalPriceByConsultationId(Long consultationId) {
+        List<ConsultationDetail> details = detailRepo.findByConsultationId(consultationId);
+
+        BigDecimal total = details.stream()
+                .map(d -> d.getProduct().getPrice().multiply(BigDecimal.valueOf(d.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        ConsultationTotalDTO dto = new ConsultationTotalDTO();
+        dto.setConsultationId(consultationId);
+        dto.setTotalPrice(total);
+        return dto;
+    }
+
+    public ConsultationDetail createDetail(ConsultationDetailCreateDTO dto, Long horseId, Long consultationId) {
+        Long userId = authService.getLoggedInId();
+        String role = authService.getLoggedInRole();
+        if (!"user".equals(role)) {
+            throw new IllegalStateException("Only users can add consultation details.");
+        }
+
+        ProductCatalog product = productRepo.findById(dto.getProductId())
+                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
+
         Consultation consultation = consultationRepo.findById(consultationId)
                 .orElseThrow(() -> new EntityNotFoundException("Consultation not found"));
 
         Horse horse = horseRepo.findById(horseId)
                 .orElseThrow(() -> new EntityNotFoundException("Horse not found"));
 
-        Long userId = authService.getLoggedInId();
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
-        Long productId = detail.getProduct().getId();
-        ProductCatalog product = productRepo.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found"));
-
+        ConsultationDetail detail = new ConsultationDetail();
         detail.setConsultation(consultation);
         detail.setHorse(horse);
-        detail.setUser(user);
         detail.setProduct(product);
+        detail.setUser(user);
+        detail.setQuantity(dto.getQuantity());
 
         return detailRepo.save(detail);
     }
 
-    public ConsultationDetail update(ConsultationDetail detail) {
+    public ConsultationDetail updateDetail(ConsultationDetailUpdateDTO dto,
+                                           Long horseId,
+                                           Long consultationId,
+                                           Long existingProductId) {
+
+        Long userId = authService.getLoggedInId();
+        String role = authService.getLoggedInRole();
+        if (!"user".equals(role)) {
+            throw new IllegalStateException("Only users can update consultation details.");
+        }
+
+        Consultation consultation = consultationRepo.findById(consultationId)
+                .orElseThrow(() -> new EntityNotFoundException("Consultation not found"));
+
+        // Optional: validate horse/consultation match
+        if (!consultation.getHorse().getId().equals(horseId)) {
+            throw new IllegalArgumentException("Consultation does not belong to this horse.");
+        }
+
+        ConsultationDetailId id = new ConsultationDetailId(consultationId, existingProductId);
+        ConsultationDetail detail = detailRepo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Consultation detail not found"));
+
+        detail.setQuantity(dto.getQuantity());
+
         return detailRepo.save(detail);
     }
 

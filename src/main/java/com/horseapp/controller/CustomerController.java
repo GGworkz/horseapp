@@ -94,6 +94,7 @@ public class CustomerController {
             Customer customer = customerService.findByUsername(username);
 
             CustomerResponseDTO dto = new CustomerResponseDTO();
+            dto.setId(customer.getId());
             dto.setUsername(customer.getUsername());
             dto.setFirstName(customer.getFirstName());
             dto.setLastName(customer.getLastName());
@@ -143,7 +144,7 @@ public class CustomerController {
 
             customerService.deleteById(customerId);
             authenticationService.signOut();
-            return ResponseEntity.ok("User deleted, session ended");
+            return ResponseEntity.ok("Customer deleted, session ended");
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not logged in");
         }

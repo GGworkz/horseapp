@@ -1,32 +1,30 @@
 package com.horseapp.service;
 
+import com.horseapp.security.AccessGuard;
 import com.horseapp.util.SessionManager;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthorizationService {
 
     private final SessionManager sessionManager;
+    private final AccessGuard accessGuard;
 
-    public AuthorizationService(SessionManager sessionManager) {
+    public AuthorizationService(SessionManager sessionManager, @Lazy AccessGuard accessGuard) {
         this.sessionManager = sessionManager;
+        this.accessGuard = accessGuard;
     }
 
     public void validateUserAccess(long expectedUserId) {
-        String role = (String) sessionManager.get("role");
-        Long actualId = parseLong(sessionManager.get("id"));
-
-        if (!"user".equals(role) || actualId == null || actualId != expectedUserId) {
+        if (!accessGuard.hasUserAccess(expectedUserId)) {
             throw new IllegalStateException("Unauthorized");
         }
     }
 
     public void validateCustomerAccess(long expectedCustomerId) {
-        String role = (String) sessionManager.get("role");
-        Long actualId = parseLong(sessionManager.get("id"));
-
-        if (!"customer".equals(role) || actualId == null || actualId != expectedCustomerId) {
+        if (!accessGuard.hasCustomerAccess(expectedCustomerId)) {
             throw new IllegalStateException("Unauthorized");
         }
     }

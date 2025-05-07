@@ -11,11 +11,8 @@ import com.horseapp.service.CustomerUserService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "User-Customer", description = "User Customer relationship management")
 @RestController
@@ -31,6 +28,7 @@ public class CustomerUserController {
         this.authorizationService = authorizationService;
     }
 
+    @PreAuthorize("@accessGuard.hasUserAccess(#userId)")
     @GetMapping("/user/{userId}/customers")
     public ResponseEntity<?> getCustomers(@PathVariable Long userId) {
         try {
@@ -42,6 +40,7 @@ public class CustomerUserController {
         }
     }
 
+    @PreAuthorize("@accessGuard.hasCustomerAccess(#customerId)")
     @GetMapping("/customer/{customerId}/users")
     public ResponseEntity<?> getUsers(@PathVariable Long customerId) {
         try {
@@ -53,6 +52,7 @@ public class CustomerUserController {
         }
     }
 
+    @PreAuthorize("@accessGuard.hasCustomerAccess(#customerId)")
     @PostMapping("/customer/{customerId}/user/{userId}")
     public ResponseEntity<String> addUserToCustomer(@PathVariable Long customerId, @PathVariable Long userId) {
         try {
@@ -71,4 +71,23 @@ public class CustomerUserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized action");
         }
     }
+
+    @PreAuthorize("@accessGuard.hasCustomerAccess(#customerId)")
+    @DeleteMapping("/customer/{customerId}/user/{userId}")
+    public ResponseEntity<String> removeUserFromCustomer(@PathVariable Long customerId, @PathVariable Long userId) {
+        try {
+            authorizationService.validateCustomerAccess(customerId);
+
+            boolean removed = customerUserService.removeUserFromCustomer(customerId, userId);
+            if (removed) {
+                return ResponseEntity.ok("User removed from customer successfully");
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User was not associated with customer");
+            }
+
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized action");
+        }
+    }
+
 }

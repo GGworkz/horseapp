@@ -2,10 +2,11 @@ package com.horseapp.controller;
 
 import java.util.Optional;
 
-import com.horseapp.dto.ProductCatalogCreateDTO;
-import com.horseapp.dto.ProductCatalogUpdateDTO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import com.horseapp.dto.ProductCatalogCreateDTO;
+import com.horseapp.dto.ProductCatalogPriceUpdateDTO;
+import com.horseapp.dto.ProductCatalogUpdateDTO;
 import com.horseapp.model.ProductCatalog;
 import com.horseapp.service.AuthorizationService;
 import com.horseapp.service.ProductCatalogService;
@@ -80,8 +81,6 @@ public class ProductCatalogController {
         return ResponseEntity.ok("Catalog updated successfully");
     }
 
-
-
     @PreAuthorize("@accessGuard.hasUserAccess(#userId)")
     @DeleteMapping("/{catalogId}")
     public ResponseEntity<?> deleteCatalog(@PathVariable Long userId,
@@ -99,7 +98,7 @@ public class ProductCatalogController {
     @PutMapping("/{catalogId}/price")
     public ResponseEntity<?> updateCatalogPrice(@PathVariable Long userId,
                                                 @PathVariable Long catalogId,
-                                                @RequestBody ProductCatalog catalogUpdate) {
+                                                @RequestBody ProductCatalogPriceUpdateDTO catalogUpdate) {
         Optional<ProductCatalog> existing = catalogService.getById(catalogId);
         if (existing.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Catalog not found");

@@ -62,4 +62,10 @@ public class CustomerService {
         return customerRepository.findByUsername(username)
                 .orElseThrow(() -> new NoSuchElementException("Customer not found"));
     }
+
+    public Customer getByIdOrThrow(Long id) {
+        return customerRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Customer not found"));
+    }
+
 }

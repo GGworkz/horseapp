@@ -95,6 +95,7 @@ public class UserController {
             User user = userService.findByUsername(username);
 
             UserResponseDTO dto = new UserResponseDTO();
+            dto.setId(user.getId());
             dto.setUsername(user.getUsername());
             dto.setFirstName(user.getFirstName());
             dto.setLastName(user.getLastName());

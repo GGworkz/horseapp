@@ -47,5 +47,23 @@ public class CustomerUserService {
 
         return "not_found";
     }
+
+    public boolean removeUserFromCustomer(Long customerId, Long userId) {
+        Optional<Customer> customerOpt = customerRepository.findById(customerId);
+        Optional<User> userOpt = userRepository.findById(userId);
+
+        if (customerOpt.isPresent() && userOpt.isPresent()) {
+            Customer customer = customerOpt.get();
+            User user = userOpt.get();
+
+            if (customer.getUsers().remove(user)) {
+                customerRepository.save(customer);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }
 

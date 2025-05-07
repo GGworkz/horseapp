@@ -1,14 +1,15 @@
 package com.horseapp.controller;
 
-import java.util.Optional;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-import com.horseapp.model.Horse;
+import com.horseapp.dto.HorseCreateDTO;
+import com.horseapp.dto.HorseUpdateDTO;
 import com.horseapp.service.AuthorizationService;
 import com.horseapp.service.CustomerUserService;
 import com.horseapp.service.HorseService;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -46,31 +47,27 @@ public class HorseController {
 
     @PreAuthorize("@accessGuard.hasCustomerAccess(#customerId)")
     @PostMapping
-    public ResponseEntity<?> createHorse(@PathVariable Long customerId, @RequestBody Horse horse) {
-        horse.getCustomer().setId(customerId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(horseService.createHorse(horse));
+    public ResponseEntity<?> createHorse(@PathVariable Long customerId, @RequestBody HorseCreateDTO horseDto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(horseService.createHorse(customerId, horseDto));
     }
+
 
     @PreAuthorize("@accessGuard.hasCustomerAccess(#customerId)")
     @PutMapping("/{horseId}")
     public ResponseEntity<?> updateHorse(@PathVariable Long customerId,
                                          @PathVariable Long horseId,
-                                         @RequestBody Horse incomingHorse) {
-        Optional<Horse> optional = horseService.getHorseById(horseId);
-        if (optional.isEmpty()) {
+                                         @RequestBody HorseUpdateDTO horseDto) {
+        try {
+            horseService.updateHorse(horseId, customerId, horseDto);
+            return ResponseEntity.ok("Horse updated successfully");
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Horse not found");
+        } catch (IllegalAccessException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
         }
-
-        Horse existing = optional.get();
-        existing.setName(incomingHorse.getName());
-
-        // Horse transfer
-        if (incomingHorse.getCustomer() != null && incomingHorse.getCustomer().getId() != null) {
-            existing.getCustomer().setId(incomingHorse.getCustomer().getId());
-        }
-
-        return ResponseEntity.ok(horseService.updateHorse(existing));
     }
+
 
     @PreAuthorize("@accessGuard.hasCustomerAccess(#customerId)")
     @DeleteMapping("/{horseId}")

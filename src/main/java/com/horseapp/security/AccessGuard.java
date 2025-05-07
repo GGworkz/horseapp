@@ -24,6 +24,7 @@ public class AccessGuard {
     public boolean hasCustomerAccess(Long customerId) {
         String role = authorizationService.getLoggedInRole();
         long id = authorizationService.getLoggedInId();
+
         return ("customer".equals(role) && id == customerId)
                 || ("user".equals(role) && customerUserService.getCustomers(id).stream()
                 .anyMatch(c -> c.getId().equals(customerId)));

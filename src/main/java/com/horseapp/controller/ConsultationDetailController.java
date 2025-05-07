@@ -6,6 +6,10 @@ import jakarta.persistence.EntityNotFoundException;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import com.horseapp.dto.ConsultationDetailCreateDTO;
+import com.horseapp.dto.ConsultationDetailUpdateDTO;
+import com.horseapp.dto.ConsultationDetailResponseDTO;
+import com.horseapp.dto.ConsultationTotalDTO;
 import com.horseapp.model.ConsultationDetail;
 import com.horseapp.service.AuthorizationService;
 import com.horseapp.service.ConsultationDetailService;
@@ -38,9 +42,18 @@ public class ConsultationDetailController {
 
     @PreAuthorize("@accessGuard.hasCustomerAccess(#customerId)")
     @GetMapping
-    public ResponseEntity<List<ConsultationDetail>> getDetails(@PathVariable Long consultationId,
-                                                               @PathVariable Long customerId) {
-        return ResponseEntity.ok(detailService.findByConsultationId(consultationId));
+    public ResponseEntity<List<ConsultationDetailResponseDTO>> getDetails(@PathVariable Long customerId,
+                                                                          @PathVariable Long horseId,
+                                                                          @PathVariable Long consultationId) {
+        return ResponseEntity.ok(detailService.findDetailResponsesByConsultationId(consultationId));
+    }
+
+    @PreAuthorize("@accessGuard.hasCustomerAccess(#customerId)")
+    @GetMapping("/total")
+    public ResponseEntity<ConsultationTotalDTO> getTotal(@PathVariable Long customerId,
+                                                         @PathVariable Long horseId,
+                                                         @PathVariable Long consultationId) {
+        return ResponseEntity.ok(detailService.getTotalPriceByConsultationId(consultationId));
     }
 
     @PreAuthorize("@accessGuard.hasCustomerAccess(#customerId)")
@@ -48,15 +61,16 @@ public class ConsultationDetailController {
     public ResponseEntity<?> addDetail(@PathVariable Long customerId,
                                        @PathVariable Long horseId,
                                        @PathVariable Long consultationId,
-                                       @RequestBody ConsultationDetail detail) {
+                                       @RequestBody ConsultationDetailCreateDTO dto) {
         try {
             return ResponseEntity.status(HttpStatus.CREATED).body(
-                    detailService.createDetail(detail, horseId, consultationId)
+                    detailService.createDetail(dto, horseId, consultationId)
             );
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
 
     @PreAuthorize("@accessGuard.hasCustomerAccess(#customerId)")
     @DeleteMapping("/{productId}")
@@ -70,16 +84,19 @@ public class ConsultationDetailController {
     @PreAuthorize("@accessGuard.hasCustomerAccess(#customerId)")
     @PutMapping("/{productId}")
     public ResponseEntity<?> updateDetail(@PathVariable Long customerId,
+                                          @PathVariable Long horseId,
                                           @PathVariable Long consultationId,
                                           @PathVariable Long productId,
-                                          @RequestBody ConsultationDetail incomingDetail) {
+                                          @RequestBody ConsultationDetailUpdateDTO dto) {
         try {
-            ConsultationDetail existing = detailService.getDetail(consultationId, productId);
-            existing.setQuantity(incomingDetail.getQuantity());
-            return ResponseEntity.ok(detailService.update(existing));
+            ConsultationDetail updated = detailService.updateDetail(dto, horseId, consultationId, productId);
+            return ResponseEntity.ok(updated);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
+
 
 }
