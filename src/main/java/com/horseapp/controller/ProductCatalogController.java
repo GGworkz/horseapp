@@ -2,6 +2,8 @@ package com.horseapp.controller;
 
 import java.util.Optional;
 
+import com.horseapp.dto.ProductCatalogCreateDTO;
+import com.horseapp.dto.ProductCatalogUpdateDTO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import com.horseapp.model.ProductCatalog;
@@ -9,6 +11,7 @@ import com.horseapp.service.AuthorizationService;
 import com.horseapp.service.ProductCatalogService;
 import com.horseapp.service.UserService;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -46,8 +49,14 @@ public class ProductCatalogController {
 
     @PreAuthorize("@accessGuard.hasUserAccess(#userId)")
     @PostMapping
-    public ResponseEntity<?> createCatalog(@PathVariable Long userId, @RequestBody ProductCatalog catalog) {
+    public ResponseEntity<?> createCatalog(@PathVariable Long userId,
+                                           @Valid @RequestBody ProductCatalogCreateDTO dto) {
+        ProductCatalog catalog = new ProductCatalog();
+        catalog.setName(dto.getName());
+        catalog.setType(dto.getType());
+        catalog.setPrice(dto.getPrice());
         catalog.setUser(userService.findById(userId));
+
         return ResponseEntity.status(HttpStatus.CREATED).body(catalogService.create(catalog));
     }
 
@@ -55,16 +64,23 @@ public class ProductCatalogController {
     @PutMapping("/{catalogId}")
     public ResponseEntity<?> updateCatalog(@PathVariable Long userId,
                                            @PathVariable Long catalogId,
-                                           @RequestBody ProductCatalog catalog) {
-        Optional<ProductCatalog> existing = catalogService.getById(catalogId);
-        if (existing.isEmpty()) {
+                                           @Valid @RequestBody ProductCatalogUpdateDTO catalogDTO) {
+        Optional<ProductCatalog> existingOpt = catalogService.getById(catalogId);
+        if (existingOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Catalog not found");
         }
 
-        catalog.setId(catalogId);
-        catalog.setUser(userService.findById(userId));
-        return ResponseEntity.ok(catalogService.update(catalog));
+        ProductCatalog existingCatalog = existingOpt.get();
+        existingCatalog.setName(catalogDTO.getName());
+        existingCatalog.setType(catalogDTO.getType());
+        existingCatalog.setPrice(catalogDTO.getPrice());
+        existingCatalog.setUser(userService.findById(userId)); // preserve association
+
+        catalogService.update(existingCatalog);
+        return ResponseEntity.ok("Catalog updated successfully");
     }
+
+
 
     @PreAuthorize("@accessGuard.hasUserAccess(#userId)")
     @DeleteMapping("/{catalogId}")

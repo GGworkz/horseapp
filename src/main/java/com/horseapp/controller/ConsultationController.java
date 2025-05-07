@@ -1,5 +1,6 @@
 package com.horseapp.controller;
 
+import java.time.ZonedDateTime;
 import java.util.Optional;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -80,7 +81,10 @@ public class ConsultationController {
 
         try {
             Consultation consultation = optional.get();
-            consultation.setTimestamp(updates.getTimestamp());
+            ZonedDateTime effectiveTimestamp =
+                    updates.getTimestamp() != null ? updates.getTimestamp() : ZonedDateTime.now();
+
+            consultation.setTimestamp(effectiveTimestamp);
             consultation.setHorse(horseService.getHorseByIdOrThrow(horseId));
 
             return ResponseEntity.ok(consultationService.update(consultation));

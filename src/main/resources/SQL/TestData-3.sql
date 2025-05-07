@@ -98,3 +98,9 @@ INSERT INTO consultation_details (consultation_id, user_id, horse_id, product_id
 VALUES (10, 3, 895, 120, 1);
 INSERT INTO consultation_details (consultation_id, user_id, horse_id, product_id, quantity)
 VALUES (10, 10, 895, 483, 1);
+
+SELECT setval('consultation_seq', COALESCE((SELECT MAX(id) FROM consultations), 1));
+SELECT setval('horse_seq', COALESCE((SELECT MAX(id) FROM horses), 1));
+SELECT setval('customer_seq', COALESCE((SELECT MAX(id) FROM customers), 1));
+SELECT setval('product_catalog_seq', COALESCE((SELECT MAX(id) FROM product_catalogs), 1));
+SELECT setval('user_seq', COALESCE((SELECT MAX(id) FROM users), 1));
