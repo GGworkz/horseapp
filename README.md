@@ -13,16 +13,17 @@ Designed to streamline veterinary management, allowing veterinarians to manage c
 - **Spring Security** - User authentication and session management  
 - **Spring Data JPA** - Simplified database interactions  
 - **PostgreSQL** - Scalable and reliable relational database  
+- **RESTful API Documentation** - Interactive Swagger API documentation
 
 ### **Authentication & Authorization:**  
 - **User Signup & Login** - Secure authentication with role-based access  
 - **Session Management** - Persistent login to avoid repeated sign-ins  
-- **User Role Management** - Users can register as **Veterinarians, Assistants, or Customers**  
+- **User Role Management** - Users can register as **Veterinarians, or Customers**  
 
 ### **API Functionalities:**  
 - **User Management:**
   - Signup & login
-  - Role selection (**Vet, Assistant, Customer**)
+  - Role selection (**Vet, Customer**)
   - Session handling to prevent frequent logins
 - **Veterinarian Features:**
   - Accept new customers & their horses
@@ -34,7 +35,7 @@ Designed to streamline veterinary management, allowing veterinarians to manage c
 
 ### **Business Entities:**
 - **User** - Represents veterinarians, assistants, and customers
-- **Client** - Customers linked to a veterinarian
+- **Customer** - Customers linked to a veterinarian
 - **Horse** - Managed under a client’s profile
 - **Product** - Includes services, treatments, and medications
 - **Consultation** - Medical appointments that track treatments, medications, and costs
@@ -44,8 +45,6 @@ Designed to streamline veterinary management, allowing veterinarians to manage c
 ## 📌 **Planned Features**  
 - 🚀 **Appointment Scheduling** - Customers can book vet consultations  
 - 💳 **Payment Integration** - Support for online invoicing and payments  
-- 📊 **Dashboard & Reports** - Vets can track consultations and earnings  
-- 📄 **RESTful API Documentation** - Interactive Swagger API documentation  
+- 📊 **Dashboard & Reports** - Vets can track consultations and earnings
 
-This project aims to provide an **efficient and structured system for veterinarians** to manage their practice while giving **customers control over their horse’s healthcare**.  
-
+This project aims to provide an **efficient and structured system for veterinarians** to manage their practice while giving **customers control over their horse’s healthcare**.
