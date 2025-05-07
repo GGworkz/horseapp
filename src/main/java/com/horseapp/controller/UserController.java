@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import com.horseapp.dto.UserLoginDTO;
+import com.horseapp.dto.UserSignupDTO;
 import com.horseapp.dto.UserUpdateDTO;
 import com.horseapp.dto.UserResponseDTO;
 import com.horseapp.model.User;
@@ -42,7 +44,15 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<String> postUserSignUp(@Valid @RequestBody User user) {
+    public ResponseEntity<String> postUserSignUp(@Valid @RequestBody UserSignupDTO dto) {
+        User user = new User();
+        user.setUsername(dto.getUsername());
+        user.setPassword(dto.getPassword());
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
+        user.setEmail(dto.getEmail());
+        user.setPhone(dto.getPhone());
+
         String result = userService.create(user);
 
         return switch (result) {
@@ -53,13 +63,18 @@ public class UserController {
         };
     }
 
+
     @PostMapping("/signin")
-    public ResponseEntity<String> postUserSignIn(@Valid @RequestBody User user) {
+    public ResponseEntity<String> postUserSignIn(@Valid @RequestBody UserLoginDTO dto) {
         if (sessionManager.isLoggedIn()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Already logged in");
         }
 
-        boolean success = authenticationService.signInUser(user);
+        User loginUser = new User();
+        loginUser.setUsername(dto.getUsername());
+        loginUser.setPassword(dto.getPassword());
+
+        boolean success = authenticationService.signInUser(loginUser);
         if (!success) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid username or password");
         }

@@ -4,6 +4,8 @@ import jakarta.validation.Valid;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import com.horseapp.dto.CustomerLoginDTO;
+import com.horseapp.dto.CustomerSignupDTO;
 import com.horseapp.dto.CustomerResponseDTO;
 import com.horseapp.dto.CustomerUpdateDTO;
 import com.horseapp.model.Customer;
@@ -42,7 +44,15 @@ public class CustomerController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<String> postCustomerSignUp(@Valid @RequestBody Customer customer) {
+    public ResponseEntity<String> postCustomerSignUp(@Valid @RequestBody CustomerSignupDTO dto) {
+        Customer customer = new Customer();
+        customer.setUsername(dto.getUsername());
+        customer.setPassword(dto.getPassword());
+        customer.setFirstName(dto.getFirstName());
+        customer.setLastName(dto.getLastName());
+        customer.setEmail(dto.getEmail());
+        customer.setPhone(dto.getPhone());
+
         String result = customerService.create(customer);
 
         return switch (result) {
@@ -54,12 +64,16 @@ public class CustomerController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<String> postCustomerSignIn(@Valid @RequestBody Customer customer) {
+    public ResponseEntity<String> postCustomerSignIn(@Valid @RequestBody CustomerLoginDTO dto) {
         if (sessionManager.isLoggedIn()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Already logged in");
         }
 
-        boolean success = authenticationService.signInCustomer(customer);
+        Customer loginCustomer = new Customer();
+        loginCustomer.setUsername(dto.getUsername());
+        loginCustomer.setPassword(dto.getPassword());
+
+        boolean success = authenticationService.signInCustomer(loginCustomer);
         if (!success) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid username or password");
         }

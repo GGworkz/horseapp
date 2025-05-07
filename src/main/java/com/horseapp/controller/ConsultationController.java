@@ -6,6 +6,8 @@ import jakarta.persistence.EntityNotFoundException;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import com.horseapp.dto.ConsultationCreateDTO;
+import com.horseapp.dto.ConsultationUpdateDTO;
 import com.horseapp.model.Consultation;
 import com.horseapp.service.AuthorizationService;
 import com.horseapp.service.ConsultationService;
@@ -51,9 +53,12 @@ public class ConsultationController {
     @PostMapping
     public ResponseEntity<?> createConsultation(@PathVariable Long customerId,
                                                 @PathVariable Long horseId,
-                                                @RequestBody Consultation consultation) {
+                                                @RequestBody ConsultationCreateDTO request) {
         try {
+            Consultation consultation = new Consultation();
+            consultation.setTimestamp(request.getTimestamp());
             consultation.setHorse(horseService.getHorseByIdOrThrow(horseId));
+
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(consultationService.create(consultation));
         } catch (EntityNotFoundException e) {
@@ -61,25 +66,29 @@ public class ConsultationController {
         }
     }
 
+
     @PreAuthorize("@accessGuard.hasCustomerAccess(#customerId)")
     @PutMapping("/{consultationId}")
     public ResponseEntity<?> updateConsultation(@PathVariable Long customerId,
                                                 @PathVariable Long horseId,
                                                 @PathVariable Long consultationId,
-                                                @RequestBody Consultation consultation) {
-        Optional<Consultation> existing = consultationService.getById(consultationId);
-        if (existing.isEmpty()) {
+                                                @RequestBody ConsultationUpdateDTO updates) {
+        Optional<Consultation> optional = consultationService.getById(consultationId);
+        if (optional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Consultation not found");
         }
 
         try {
-            consultation.setId(consultationId);
+            Consultation consultation = optional.get();
+            consultation.setTimestamp(updates.getTimestamp());
             consultation.setHorse(horseService.getHorseByIdOrThrow(horseId));
+
             return ResponseEntity.ok(consultationService.update(consultation));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
 
 
     @PreAuthorize("@accessGuard.hasCustomerAccess(#customerId)")
