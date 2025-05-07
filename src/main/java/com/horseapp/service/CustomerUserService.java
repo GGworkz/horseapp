@@ -61,9 +61,7 @@ public class CustomerUserService {
                 return true;
             }
         }
-
         return false;
     }
-
 }
 

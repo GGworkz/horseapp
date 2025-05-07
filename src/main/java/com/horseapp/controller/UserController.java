@@ -63,7 +63,6 @@ public class UserController {
         };
     }
 
-
     @PostMapping("/signin")
     public ResponseEntity<String> postUserSignIn(@Valid @RequestBody UserLoginDTO dto) {
         if (sessionManager.isLoggedIn()) {
@@ -108,7 +107,6 @@ public class UserController {
         }
     }
 
-
     @PutMapping
     public ResponseEntity<?> updateCurrentUser(@Valid @RequestBody UserUpdateDTO updates) {
         try {
@@ -131,7 +129,6 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not logged in");
         }
     }
-
 
     @DeleteMapping
     public ResponseEntity<String> deleteCurrentUser() {

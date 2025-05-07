@@ -67,7 +67,6 @@ public class ConsultationController {
         }
     }
 
-
     @PreAuthorize("@accessGuard.hasCustomerAccess(#customerId)")
     @PutMapping("/{consultationId}")
     public ResponseEntity<?> updateConsultation(@PathVariable Long customerId,
@@ -92,8 +91,6 @@ public class ConsultationController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
-
-
 
     @PreAuthorize("@accessGuard.hasCustomerAccess(#customerId)")
     @DeleteMapping("/{consultationId}")

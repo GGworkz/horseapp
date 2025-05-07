@@ -123,7 +123,6 @@ public class ConsultationDetailService {
         Consultation consultation = consultationRepo.findById(consultationId)
                 .orElseThrow(() -> new EntityNotFoundException("Consultation not found"));
 
-        // Optional: validate horse/consultation match
         if (!consultation.getHorse().getId().equals(horseId)) {
             throw new IllegalArgumentException("Consultation does not belong to this horse.");
         }

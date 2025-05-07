@@ -89,5 +89,4 @@ public class CustomerUserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized action");
         }
     }
-
 }

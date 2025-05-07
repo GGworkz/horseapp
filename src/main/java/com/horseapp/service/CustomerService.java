@@ -67,5 +67,4 @@ public class CustomerService {
         return customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Customer not found"));
     }
-
 }

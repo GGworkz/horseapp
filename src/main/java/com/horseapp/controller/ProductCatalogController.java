@@ -109,5 +109,4 @@ public class ProductCatalogController {
 
         return ResponseEntity.ok(catalogService.update(catalog));
     }
-
 }

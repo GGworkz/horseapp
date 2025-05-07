@@ -37,5 +37,4 @@ public class ConsultationService {
     public void delete(Long id) {
         repository.deleteById(id);
     }
-
 }

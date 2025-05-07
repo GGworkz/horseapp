@@ -107,7 +107,6 @@ public class CustomerController {
         }
     }
 
-
     @PutMapping
     public ResponseEntity<?> updateCurrentCustomer(@Valid @RequestBody CustomerUpdateDTO updates) {
         try {
@@ -131,7 +130,6 @@ public class CustomerController {
         }
     }
 
-
     @DeleteMapping
     public ResponseEntity<String> deleteCurrentCustomer() {
         try {
@@ -149,5 +147,4 @@ public class CustomerController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not logged in");
         }
     }
-
 }
