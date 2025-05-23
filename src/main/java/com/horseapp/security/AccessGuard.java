@@ -26,7 +26,9 @@ public class AccessGuard {
         long id = authorizationService.getLoggedInId();
 
         return ("customer".equals(role) && id == customerId)
-                || ("user".equals(role) && customerUserService.getCustomers(id).stream()
+                || ("user".equals(role) && customerUserService.getCustomerEntitiesByUserId(id).stream()
                 .anyMatch(c -> c.getId().equals(customerId)));
     }
+
 }
+

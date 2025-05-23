@@ -2,6 +2,8 @@ package com.horseapp.controller;
 
 import java.util.Set;
 
+import com.horseapp.dto.CustomerUserResponseDTO;
+import com.horseapp.dto.UserCustomerResponseDTO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import com.horseapp.model.Customer;
@@ -33,10 +35,12 @@ public class CustomerUserController {
     public ResponseEntity<?> getCustomers(@PathVariable Long userId) {
         try {
             authorizationService.validateUserAccess(userId);
-            Set<Customer> customers = customerUserService.getCustomers(userId);
-            return ResponseEntity.ok(customers);
+            CustomerUserResponseDTO response = customerUserService.getCustomerUserByUserId(userId);
+            return ResponseEntity.ok(response);
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized action");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
@@ -45,12 +49,15 @@ public class CustomerUserController {
     public ResponseEntity<?> getUsers(@PathVariable Long customerId) {
         try {
             authorizationService.validateCustomerAccess(customerId);
-            Set<User> users = customerUserService.getUsers(customerId);
-            return ResponseEntity.ok(users);
+            UserCustomerResponseDTO response = customerUserService.getUsersByCustomerId(customerId);
+            return ResponseEntity.ok(response);
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized action");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
+
 
     @PreAuthorize("@accessGuard.hasCustomerAccess(#customerId)")
     @PostMapping("/customer/{customerId}/user/{userId}")
